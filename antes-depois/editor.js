@@ -243,8 +243,10 @@
 
   /* ── Drag pelo overlay ── */
   function onOverlayMouseDown(e, slider, side) {
-    if (!selectedInfo || selectedInfo.side !== side) return;
+    const panelProc = slider.closest('.ad-panel').dataset.proc;
+    if (!selectedInfo || selectedInfo.side !== side || selectedInfo.proc !== panelProc) return;
     e.preventDefault();
+    e.stopPropagation(); /* impede o slider de comparação de receber o mousedown */
     dragActive = false;
 
     const img  = selectedImg;
@@ -284,33 +286,6 @@
     const conf = getConf(selectedInfo.proc, selectedInfo.pair, side);
     conf.scale = Math.max(1, Math.min(2, conf.scale - e.deltaY * 0.001));
     if (selectedImg) applyConf(selectedImg, conf);
-    document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
-    updateValues(conf);
-  }
-
-  /* ── Selecionar imagem ao clicar ── */
-  function onImgClick(e) {
-    e.stopPropagation();
-    if (dragActive) return;
-
-    const img    = e.currentTarget;
-    const panel  = img.closest('.ad-panel');
-    const { proc, pair } = getPanelInfo(panel);
-    const side   = img.classList.contains('ad-img-before') ? 'antes' : 'depois';
-
-    document.querySelectorAll('.ad-edit-selected').forEach(el => el.classList.remove('ad-edit-selected'));
-    img.style.outline = '3px solid rgb(159,84,52)';
-    img.classList.add('ad-edit-selected');
-
-    selectedImg  = img;
-    selectedInfo = { proc, pair, side };
-
-    const conf = getConf(proc, pair, side);
-    document.getElementById('ad-edit-target').style.display = 'block';
-    document.getElementById('ad-edit-hint').style.display   = 'none';
-    document.getElementById('ad-edit-label').textContent    = `${proc} · par ${pair} · ${side}`;
-    document.getElementById('ad-edit-x').value     = conf.x;
-    document.getElementById('ad-edit-y').value     = conf.y;
     document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
     updateValues(conf);
   }
