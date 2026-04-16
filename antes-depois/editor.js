@@ -130,31 +130,162 @@
   function setEditMode(on) {
     editMode = on;
     const toggle = document.getElementById('ad-edit-toggle');
-    const panel  = document.getElementById('ad-edit-panel');
+    const uiPanel = document.getElementById('ad-edit-panel');
     toggle.textContent = on ? '✕ Sair do Editor' : '✎ Editar Fotos';
     toggle.style.background = on ? 'rgb(159,84,52)' : 'rgb(111,59,36)';
-    panel.style.display = on ? 'block' : 'none';
+    uiPanel.style.display = on ? 'block' : 'none';
 
-    document.querySelectorAll('.ad-img-before, .ad-img-after').forEach(img => {
-      if (on) {
-        img.style.cursor = 'grab';
-        img.style.transition = 'none';
-        img.addEventListener('mousedown', onImgMouseDown);
-        img.addEventListener('wheel', onImgWheel, { passive: false });
-        img.addEventListener('click', onImgClick);
-      } else {
-        img.style.cursor = '';
-        img.removeEventListener('mousedown', onImgMouseDown);
-        img.removeEventListener('wheel', onImgWheel);
-        img.removeEventListener('click', onImgClick);
-      }
-    });
-
-    if (!on) {
+    if (on) {
+      mountOverlays();
+    } else {
+      removeOverlays();
       selectedImg  = null;
       selectedInfo = null;
-      document.querySelectorAll('.ad-edit-selected').forEach(el => el.classList.remove('ad-edit-selected'));
     }
+  }
+
+  /* ── Overlays clicáveis (um para "antes", outro para "depois") ── */
+  /* Resolve o problema de pointer-events:none e clip-path nas imagens  */
+
+  function mountOverlays() {
+    document.querySelectorAll('.ad-panel.active [data-slider]').forEach(slider => {
+      addOverlaysToSlider(slider);
+    });
+  }
+
+  function addOverlaysToSlider(slider) {
+    if (slider.querySelector('.ad-edit-overlay')) return; // já tem
+
+    ['antes', 'depois'].forEach(side => {
+      const ov = document.createElement('div');
+      ov.className = 'ad-edit-overlay';
+      ov.dataset.side = side;
+      ov.style.cssText = `
+        position: absolute;
+        top: 0; bottom: 0;
+        ${side === 'antes' ? 'left: 0; right: 50%' : 'left: 50%; right: 0'};
+        z-index: 20;
+        cursor: grab;
+        user-select: none;
+      `;
+
+      /* Labels de orientação */
+      const lbl = document.createElement('div');
+      lbl.textContent = side === 'antes' ? '← clique para editar ANTES' : 'clique para editar DEPOIS →';
+      lbl.style.cssText = `
+        position: absolute; bottom: 52px;
+        ${side === 'antes' ? 'left: 8px' : 'right: 8px'};
+        font-family: 'Archivo', sans-serif;
+        font-size: 10px; letter-spacing: .08em; text-transform: uppercase;
+        color: #fff; background: rgba(159,84,52,.7);
+        padding: 3px 8px; border-radius: 100px; pointer-events: none;
+        white-space: nowrap;
+      `;
+      ov.appendChild(lbl);
+
+      ov.addEventListener('click', (e) => onOverlayClick(e, slider, side));
+      ov.addEventListener('mousedown', (e) => onOverlayMouseDown(e, slider, side));
+      ov.addEventListener('wheel', (e) => onOverlayWheel(e, slider, side), { passive: false });
+      slider.appendChild(ov);
+    });
+  }
+
+  function removeOverlays() {
+    document.querySelectorAll('.ad-edit-overlay').forEach(el => el.remove());
+    document.querySelectorAll('.ad-edit-selected-outline').forEach(el => {
+      el.style.outline = '';
+      el.classList.remove('ad-edit-selected-outline');
+    });
+  }
+
+  /* ── Selecionar via overlay ── */
+  function onOverlayClick(e, slider, side) {
+    e.stopPropagation();
+    if (dragActive) return;
+
+    const adPanel = slider.closest('.ad-panel');
+    const { proc, pair } = getPanelInfo(adPanel);
+    const img = side === 'antes'
+      ? slider.querySelector('.ad-img-before')
+      : slider.querySelector('.ad-img-after');
+
+    /* Limpa seleção anterior */
+    document.querySelectorAll('.ad-edit-selected-outline').forEach(el => {
+      el.style.outline = '';
+      el.classList.remove('ad-edit-selected-outline');
+    });
+
+    /* Destaca a imagem selecionada */
+    if (img) {
+      img.style.outline = `3px solid rgb(159,84,52)`;
+      img.style.pointerEvents = 'none'; // mantém inerte para drag funcionar pelo overlay
+      img.classList.add('ad-edit-selected-outline');
+    }
+
+    /* Destaca o overlay ativo */
+    slider.querySelectorAll('.ad-edit-overlay').forEach(ov => {
+      ov.style.background = '';
+    });
+    e.currentTarget.style.background = 'rgba(159,84,52,.08)';
+
+    selectedImg  = img;
+    selectedInfo = { proc, pair, side };
+
+    const conf = getConf(proc, pair, side);
+    document.getElementById('ad-edit-target').style.display = 'block';
+    document.getElementById('ad-edit-hint').style.display   = 'none';
+    document.getElementById('ad-edit-label').textContent    = `${proc} · par ${pair} · ${side}`;
+    document.getElementById('ad-edit-x').value     = conf.x;
+    document.getElementById('ad-edit-y').value     = conf.y;
+    document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
+    updateValues(conf);
+  }
+
+  /* ── Drag pelo overlay ── */
+  function onOverlayMouseDown(e, slider, side) {
+    if (!selectedInfo || selectedInfo.side !== side) return;
+    e.preventDefault();
+    dragActive = false;
+
+    const img  = selectedImg;
+    const conf = getConf(selectedInfo.proc, selectedInfo.pair, side);
+    dragStart  = { x: e.clientX, y: e.clientY, ox: conf.x, oy: conf.y };
+    e.currentTarget.style.cursor = 'grabbing';
+
+    function onMove(ev) {
+      const dx = ev.clientX - dragStart.x;
+      const dy = ev.clientY - dragStart.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragActive = true;
+      const rect = slider.getBoundingClientRect();
+      conf.x = Math.max(0, Math.min(100, dragStart.ox - (dx / rect.width)  * 100));
+      conf.y = Math.max(0, Math.min(100, dragStart.oy - (dy / rect.height) * 100));
+      if (img) applyConf(img, conf);
+      document.getElementById('ad-edit-x').value = conf.x.toFixed(0);
+      document.getElementById('ad-edit-y').value = conf.y.toFixed(0);
+      updateValues(conf);
+    }
+
+    function onUp(ev) {
+      ev.currentTarget && (ev.currentTarget.style.cursor = 'grab');
+      e.currentTarget.style.cursor = 'grab';
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      setTimeout(() => { dragActive = false; }, 50);
+    }
+
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
+  }
+
+  /* ── Zoom pelo overlay ── */
+  function onOverlayWheel(e, slider, side) {
+    if (!selectedInfo || selectedInfo.side !== side) return;
+    e.preventDefault();
+    const conf = getConf(selectedInfo.proc, selectedInfo.pair, side);
+    conf.scale = Math.max(1, Math.min(2, conf.scale - e.deltaY * 0.001));
+    if (selectedImg) applyConf(selectedImg, conf);
+    document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
+    updateValues(conf);
   }
 
   /* ── Selecionar imagem ao clicar ── */
@@ -184,51 +315,6 @@
     updateValues(conf);
   }
 
-  /* ── Drag para reposicionar ── */
-  function onImgMouseDown(e) {
-    if (!editMode || !e.currentTarget.classList.contains('ad-edit-selected')) return;
-    e.preventDefault();
-    dragActive = false;
-    const img = e.currentTarget;
-    const conf = getConf(selectedInfo.proc, selectedInfo.pair, selectedInfo.side);
-    dragStart = { x: e.clientX, y: e.clientY, ox: conf.x, oy: conf.y };
-    img.style.cursor = 'grabbing';
-
-    function onMove(ev) {
-      const dx = ev.clientX - dragStart.x;
-      const dy = ev.clientY - dragStart.y;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragActive = true;
-      const rect = img.parentElement.getBoundingClientRect();
-      conf.x = Math.max(0, Math.min(100, dragStart.ox - (dx / rect.width)  * 100));
-      conf.y = Math.max(0, Math.min(100, dragStart.oy - (dy / rect.height) * 100));
-      applyConf(img, conf);
-      document.getElementById('ad-edit-x').value = conf.x.toFixed(0);
-      document.getElementById('ad-edit-y').value = conf.y.toFixed(0);
-      updateValues(conf);
-    }
-
-    function onUp() {
-      img.style.cursor = 'grab';
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      setTimeout(() => { dragActive = false; }, 50);
-    }
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
-  }
-
-  /* ── Scroll para zoom ── */
-  function onImgWheel(e) {
-    if (!editMode || !selectedImg || e.currentTarget !== selectedImg) return;
-    e.preventDefault();
-    const conf = getConf(selectedInfo.proc, selectedInfo.pair, selectedInfo.side);
-    conf.scale = Math.max(1, Math.min(2, conf.scale - e.deltaY * 0.001));
-    applyConf(selectedImg, conf);
-    document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
-    updateValues(conf);
-  }
-
   /* ── Sliders ── */
   function onSliderChange() {
     if (!selectedImg || !selectedInfo) return;
@@ -245,7 +331,7 @@
       `pos: ${conf.x.toFixed(0)}% ${conf.y.toFixed(0)}% · zoom: ${conf.scale.toFixed(2)}×`;
   }
 
-  /* ── Reaplicar config ao trocar par/tab ── */
+  /* ── Reaplicar config e overlays ao trocar par/tab ── */
   function reapplyAll() {
     document.querySelectorAll('.ad-panel.active').forEach(panel => {
       const { proc, pair } = getPanelInfo(panel);
@@ -254,6 +340,16 @@
       if (imgBefore) applyConf(imgBefore, getConf(proc, pair, 'antes'));
       if (imgAfter)  applyConf(imgAfter,  getConf(proc, pair, 'depois'));
     });
+
+    if (editMode) {
+      /* Remove overlays de painéis inativos, readiciona nos ativos */
+      document.querySelectorAll('.ad-panel:not(.active) .ad-edit-overlay').forEach(el => el.remove());
+      document.querySelectorAll('.ad-panel.active [data-slider]').forEach(slider => {
+        addOverlaysToSlider(slider);
+      });
+      selectedImg  = null;
+      selectedInfo = null;
+    }
   }
 
   /* Observa mudanças no DOM (troca de par/tab) */
