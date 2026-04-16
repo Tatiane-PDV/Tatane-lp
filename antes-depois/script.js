@@ -9,12 +9,12 @@
 
   /* ── Config: procedimentos e número de pares por pasta ── */
   const PROCEDURES = [
-    { id: 'botox',                    label: 'Botox',                        pairs: 2 },
-    { id: 'bioestimulador',           label: 'Bioestimulador',               pairs: 2 },
-    { id: 'bioestimulador-de-colageno', label: 'Bioestimulador de Colágeno', pairs: 2 },
-    { id: 'preenchimento-de-mento',   label: 'Preenchimento de Mento',       pairs: 2 },
-    { id: 'preenchimento-de-olheiras',label: 'Preenchimento de Olheiras',    pairs: 2 },
-  ];
+    { id: 'botox',                      label: 'Botox',                        pairs: 2 },
+    { id: 'bioestimulador',             label: 'Bioestimulador',               pairs: 0 },
+    { id: 'bioestimulador-de-colageno', label: 'Bioestimulador de Colágeno',   pairs: 0 },
+    { id: 'preenchimento-de-mento',     label: 'Preenchimento de Mento',       pairs: 1 },
+    { id: 'preenchimento-de-olheiras',  label: 'Preenchimento de Olheiras',    pairs: 2 },
+  ].filter(p => p.pairs > 0);
 
   /* Image base path relative to this script */
   const BASE_PATH = './';
