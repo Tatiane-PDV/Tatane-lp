@@ -265,9 +265,9 @@
       updateValues(conf);
     }
 
-    function onUp(ev) {
-      ev.currentTarget && (ev.currentTarget.style.cursor = 'grab');
-      e.currentTarget.style.cursor = 'grab';
+    const overlay = e.currentTarget;
+    function onUp() {
+      overlay.style.cursor = 'grab';
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
       setTimeout(() => { dragActive = false; }, 50);
