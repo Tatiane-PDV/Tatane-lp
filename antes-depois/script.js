@@ -282,8 +282,15 @@
 
   /* ── Kick off when DOM is ready ── */
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', build);
+    document.addEventListener('DOMContentLoaded', buildAndExpose);
   } else {
+    buildAndExpose();
+  }
+
+  function buildAndExpose() {
     build();
+    /* Expõe o estado dos pares para o editor.js */
+    window.__adPanelState = panelState;
+    document.dispatchEvent(new CustomEvent('ad:stateReady', { detail: panelState }));
   }
 })();
