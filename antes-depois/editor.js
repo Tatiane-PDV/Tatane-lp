@@ -5,10 +5,10 @@
  *
  * Como usar:
  *  1. Clique em "✎ Editar Fotos" (canto inferior direito)
- *  2. Clique em qualquer foto (Antes ou Depois) para selecioná-la
- *  3. Arraste para reposicionar
- *  4. Use a roda do mouse (ou slider) para dar zoom
- *  5. Navegue entre os pares normalmente
+ *  2. Clique na metade esquerda (Antes) ou direita (Depois) para selecionar
+ *  3. Use os sliders Horizontal / Vertical / Zoom no painel lateral
+ *  4. Ou use o scroll do mouse sobre a foto para dar zoom
+ *  5. O slider de comparação continua funcionando normalmente
  *  6. Clique em "Copiar Config" e envie o JSON gerado
  */
 
@@ -48,8 +48,6 @@
   let editMode = false;
   let selectedImg  = null;
   let selectedInfo = null; // { proc, pair, side }
-  let dragActive   = false;
-  let dragStart    = { x: 0, y: 0, ox: 50, oy: 50 };
 
   function buildUI() {
     /* Botão toggle */
@@ -84,9 +82,9 @@
     panel.innerHTML = `
       <div style="font-weight:600;margin-bottom:12px;font-size:14px">Ajustar foto</div>
       <div id="ad-edit-hint" style="opacity:.55;font-size:12px;line-height:1.5;margin-bottom:12px">
-        Clique em uma foto para selecionar.<br>
-        Arraste para reposicionar.<br>
-        Scroll para zoom.
+        Clique em Antes ou Depois para selecionar.<br>
+        Use os sliders para reposicionar.<br>
+        Scroll do mouse para zoom.
       </div>
       <div id="ad-edit-target" style="display:none">
         <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.5;margin-bottom:8px" id="ad-edit-label">—</div>
@@ -165,7 +163,7 @@
         top: 0; bottom: 0;
         ${side === 'antes' ? 'left: 0; right: 50%' : 'left: 50%; right: 0'};
         z-index: 20;
-        cursor: grab;
+        cursor: pointer;
         user-select: none;
       `;
 
@@ -184,7 +182,6 @@
       ov.appendChild(lbl);
 
       ov.addEventListener('click', (e) => onOverlayClick(e, slider, side));
-      ov.addEventListener('mousedown', (e) => onOverlayMouseDown(e, slider, side));
       ov.addEventListener('wheel', (e) => onOverlayWheel(e, slider, side), { passive: false });
       slider.appendChild(ov);
     });
@@ -201,7 +198,6 @@
   /* ── Selecionar via overlay ── */
   function onOverlayClick(e, slider, side) {
     e.stopPropagation();
-    if (dragActive) return;
 
     const adPanel = slider.closest('.ad-panel');
     const { proc, pair } = getPanelInfo(adPanel);
@@ -239,44 +235,6 @@
     document.getElementById('ad-edit-y').value     = conf.y;
     document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
     updateValues(conf);
-  }
-
-  /* ── Drag pelo overlay ── */
-  function onOverlayMouseDown(e, slider, side) {
-    const panelProc = slider.closest('.ad-panel').dataset.proc;
-    if (!selectedInfo || selectedInfo.side !== side || selectedInfo.proc !== panelProc) return;
-    e.preventDefault();
-    e.stopPropagation(); /* impede o slider de comparação de receber o mousedown */
-    dragActive = false;
-
-    const img  = selectedImg;
-    const conf = getConf(selectedInfo.proc, selectedInfo.pair, side);
-    dragStart  = { x: e.clientX, y: e.clientY, ox: conf.x, oy: conf.y };
-    e.currentTarget.style.cursor = 'grabbing';
-
-    function onMove(ev) {
-      const dx = ev.clientX - dragStart.x;
-      const dy = ev.clientY - dragStart.y;
-      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) dragActive = true;
-      const rect = slider.getBoundingClientRect();
-      conf.x = Math.max(0, Math.min(100, dragStart.ox - (dx / rect.width)  * 100));
-      conf.y = Math.max(0, Math.min(100, dragStart.oy - (dy / rect.height) * 100));
-      if (img) applyConf(img, conf);
-      document.getElementById('ad-edit-x').value = conf.x.toFixed(0);
-      document.getElementById('ad-edit-y').value = conf.y.toFixed(0);
-      updateValues(conf);
-    }
-
-    const overlay = e.currentTarget;
-    function onUp() {
-      overlay.style.cursor = 'grab';
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
-      setTimeout(() => { dragActive = false; }, 50);
-    }
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
   }
 
   /* ── Zoom pelo overlay ── */
