@@ -16,8 +16,16 @@
     { id: 'preenchimento-de-olheiras',  label: 'Preenchimento de Olheiras',    pairs: 2 },
   ].filter(p => p.pairs > 0);
 
-  /* Image base path relative to this script */
-  const BASE_PATH = './';
+  /* Image base path — resolve relative to this script file, not the HTML page */
+  const BASE_PATH = (function () {
+    const scripts = document.querySelectorAll('script[src]');
+    for (const s of scripts) {
+      if (s.src.includes('antes-depois/script.js')) {
+        return s.src.replace('script.js', '');
+      }
+    }
+    return 'antes-depois/';
+  })();
 
   /* ── State per panel ── */
   const panelState = {};
