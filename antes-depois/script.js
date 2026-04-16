@@ -254,6 +254,7 @@
     if (counter) counter.textContent = `${idx + 1} / ${proc.pairs}`;
     if (prevBtn) prevBtn.disabled = idx === 0;
     if (nextBtn) nextBtn.disabled = idx === proc.pairs - 1;
+    document.dispatchEvent(new CustomEvent('ad:pairChanged', { detail: { proc: proc.id, pair: idx + 1 } }));
   }
 
   /* ── Tab switching ── */

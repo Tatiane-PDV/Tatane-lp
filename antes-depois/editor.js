@@ -330,6 +330,9 @@
       mutObs.observe(container, { subtree: true, attributes: true, attributeFilter: ['class'] });
     }
 
+    /* Reaplica config quando o usuário navega entre pares */
+    document.addEventListener('ad:pairChanged', () => reapplyAll(null));
+
     /* Expõe estado dos pares para o editor */
     const origBuild = window.__adRegisterState;
     document.addEventListener('ad:stateReady', (e) => {
