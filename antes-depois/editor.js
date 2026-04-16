@@ -332,7 +332,16 @@
   }
 
   /* ── Reaplicar config e overlays ao trocar par/tab ── */
-  function reapplyAll() {
+  /* Só chamado quando um .ad-panel ou .ad-tab muda de active — não quando
+     o editor mesmo adiciona classes de seleção nas imagens.             */
+  function reapplyAll(mutations) {
+    /* Filtra: só reage a mudanças de classe em .ad-panel ou .ad-tab */
+    const relevant = mutations && mutations.some(m => {
+      const el = m.target;
+      return el.classList.contains('ad-panel') || el.classList.contains('ad-tab');
+    });
+    if (mutations && !relevant) return; /* ignora mudanças do editor */
+
     document.querySelectorAll('.ad-panel.active').forEach(panel => {
       const { proc, pair } = getPanelInfo(panel);
       const imgBefore = panel.querySelector('.ad-img-before');
@@ -347,12 +356,15 @@
       document.querySelectorAll('.ad-panel.active [data-slider]').forEach(slider => {
         addOverlaysToSlider(slider);
       });
+      /* Reseta seleção só em troca real de tab/par */
       selectedImg  = null;
       selectedInfo = null;
+      document.getElementById('ad-edit-target').style.display = 'none';
+      document.getElementById('ad-edit-hint').style.display   = 'block';
     }
   }
 
-  /* Observa mudanças no DOM (troca de par/tab) */
+  /* Observa mudanças de classe apenas nos .ad-panel e .ad-tab (não subtree inteiro) */
   const mutObs = new MutationObserver(reapplyAll);
 
   /* ── Exportar config ── */
