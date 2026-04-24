@@ -373,10 +373,12 @@
        ============================================= */
     .face-full {
       position: relative; overflow: hidden;
+      display: flex; justify-content: center;
+      padding: 0 var(--space-xl);
     }
     .face-full img {
-      width: 100%; height: auto;
-      display: block;
+      width: 100%; max-width: 720px; height: auto;
+      display: block; border-radius: 4px;
     }
     .face-full-overlay {
       position: absolute; inset: 0;
