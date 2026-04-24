@@ -26,13 +26,16 @@
 
   function getConf(proc, pair, side) {
     const k = key(proc, pair, side);
-    if (!CONFIG[k]) CONFIG[k] = { x: 50, y: 50, scale: 1 };
+    if (!CONFIG[k]) CONFIG[k] = { x: 50, y: 50, scale: 1, tx: 0 };
     return CONFIG[k];
   }
 
   function applyConf(img, conf) {
-    img.style.objectPosition = `${conf.x}% ${conf.y}%`;
-    img.style.transform      = `scale(${conf.scale})`;
+    img.style.objectPosition  = `${conf.x}% ${conf.y}%`;
+    const parts = [];
+    if (conf.tx) parts.push(`translateX(${conf.tx}%)`);
+    if (conf.scale !== 1) parts.push(`scale(${conf.scale})`);
+    img.style.transform       = parts.join(' ') || '';
     img.style.transformOrigin = `${conf.x}% ${conf.y}%`;
   }
 
@@ -96,11 +99,15 @@
           Vertical
           <input type="range" id="ad-edit-y" min="0" max="100" value="50" style="width:100%;margin-top:4px;accent-color:rgb(159,84,52)">
         </label>
-        <label style="display:block;margin-bottom:12px">
+        <label style="display:block;margin-bottom:6px">
           Zoom
-          <input type="range" id="ad-edit-scale" min="100" max="200" value="100" style="width:100%;margin-top:4px;accent-color:rgb(159,84,52)">
+          <input type="range" id="ad-edit-scale" min="100" max="250" value="100" style="width:100%;margin-top:4px;accent-color:rgb(159,84,52)">
         </label>
-        <div style="font-size:11px;opacity:.45;margin-bottom:10px" id="ad-edit-values">pos: 50% 50% · zoom: 1×</div>
+        <label style="display:block;margin-bottom:12px">
+          Pan Horizontal
+          <input type="range" id="ad-edit-tx" min="-60" max="60" value="0" style="width:100%;margin-top:4px;accent-color:rgb(159,84,52)">
+        </label>
+        <div style="font-size:11px;opacity:.45;margin-bottom:10px" id="ad-edit-values">pos: 50% 50% · zoom: 1× · pan: 0%</div>
       </div>
       <button id="ad-copy-btn" style="
         width:100%; height:36px; border-radius:100px;
@@ -117,7 +124,7 @@
     document.body.appendChild(panel);
 
     /* Sliders */
-    ['ad-edit-x','ad-edit-y','ad-edit-scale'].forEach(id => {
+    ['ad-edit-x','ad-edit-y','ad-edit-scale','ad-edit-tx'].forEach(id => {
       document.getElementById(id).addEventListener('input', onSliderChange);
     });
 
@@ -234,6 +241,7 @@
     document.getElementById('ad-edit-x').value     = conf.x;
     document.getElementById('ad-edit-y').value     = conf.y;
     document.getElementById('ad-edit-scale').value = Math.round(conf.scale * 100);
+    document.getElementById('ad-edit-tx').value    = conf.tx || 0;
     updateValues(conf);
   }
 
@@ -255,13 +263,14 @@
     conf.x     = parseFloat(document.getElementById('ad-edit-x').value);
     conf.y     = parseFloat(document.getElementById('ad-edit-y').value);
     conf.scale = parseFloat(document.getElementById('ad-edit-scale').value) / 100;
+    conf.tx    = parseFloat(document.getElementById('ad-edit-tx').value);
     applyConf(selectedImg, conf);
     updateValues(conf);
   }
 
   function updateValues(conf) {
     document.getElementById('ad-edit-values').textContent =
-      `pos: ${conf.x.toFixed(0)}% ${conf.y.toFixed(0)}% · zoom: ${conf.scale.toFixed(2)}×`;
+      `pos: ${conf.x.toFixed(0)}% ${conf.y.toFixed(0)}% · zoom: ${conf.scale.toFixed(2)}× · pan: ${(conf.tx||0).toFixed(0)}%`;
   }
 
   /* ── Reaplicar config e overlays ao trocar par/tab ── */
@@ -311,6 +320,7 @@
         x: parseFloat(v.x.toFixed(1)),
         y: parseFloat(v.y.toFixed(1)),
         scale: parseFloat(v.scale.toFixed(3)),
+        tx: parseFloat((v.tx || 0).toFixed(1)),
       };
     }
     const json = JSON.stringify(out, null, 2);
@@ -321,8 +331,39 @@
     });
   }
 
+  /* ── Semeia CONFIG com os valores já salvos no alignPairs do script.js ── */
+  function seedConfigFromProcedures() {
+    const procs = window.__adProcedures;
+    if (!procs) return;
+    procs.forEach(proc => {
+      if (!proc.alignPairs) return;
+      proc.alignPairs.forEach((ap, idx) => {
+        const pair = idx + 1;
+        if (ap.before) {
+          const parts = ap.before.split(' ');
+          CONFIG[key(proc.id, pair, 'antes')] = {
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            tx: ap.txBefore || 0,
+            scale: ap.scaleBefore || 1,
+          };
+        }
+        if (ap.after) {
+          const parts = ap.after.split(' ');
+          CONFIG[key(proc.id, pair, 'depois')] = {
+            x: parseFloat(parts[0]),
+            y: parseFloat(parts[1]),
+            tx: ap.txAfter || 0,
+            scale: ap.scaleAfter || 1,
+          };
+        }
+      });
+    });
+  }
+
   /* ── Init ── */
   function init() {
+    seedConfigFromProcedures();
     buildUI();
 
     const container = document.getElementById('antes-depois');

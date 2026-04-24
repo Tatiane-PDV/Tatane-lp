@@ -8,13 +8,39 @@
   'use strict';
 
   /* ── Config: procedimentos e número de pares por pasta ── */
+  /* alignPairs: object-position para antes/depois de cada par, alinhando o rosto */
   const PROCEDURES = [
-    { id: 'botox',                      label: 'Botox',                        pairs: 2 },
-    { id: 'bioestimulador',             label: 'Bioestimulador',               pairs: 0 },
-    { id: 'bioestimulador-de-colageno', label: 'Bioestimulador de Colágeno',   pairs: 0 },
-    { id: 'preenchimento-de-mento',     label: 'Preenchimento de Mento',       pairs: 1 },
-    { id: 'preenchimento-de-olheiras',  label: 'Preenchimento de Olheiras',    pairs: 2 },
+    {
+      id: 'botox', label: 'Botox', pairs: 2,
+      alignPairs: [
+        { before: '50% 38%', after: '50% 47%' },
+        { before: '50% 50%', after: '50% 29%', scaleAfter: 1.35 },
+      ],
+    },
+    {
+      id: 'bioestimulador', label: 'Bioestimulador', pairs: 1,
+      alignPairs: [
+        { before: '50% 46%', scaleBefore: 1.06, after: '50% 50%' },
+      ],
+    },
+    { id: 'bioestimulador-de-colageno', label: 'Bioestimulador de Colágeno', pairs: 0 },
+    {
+      id: 'preenchimento-de-mento', label: 'Preenchimento de Mento', pairs: 1,
+      alignPairs: [
+        { before: '50% 50%', after: '50% 50%' },
+      ],
+    },
+    {
+      id: 'preenchimento-de-olheiras', label: 'Preenchimento de Olheiras', pairs: 2,
+      alignPairs: [
+        { before: '50% 50%', scaleBefore: 1.02, after: '50% 58%' },
+        { before: '50% 32%', after: '50% 32%' },
+      ],
+    },
   ].filter(p => p.pairs > 0);
+
+  /* Expõe para o editor.js poder semear seu CONFIG com os valores salvos */
+  window.__adProcedures = PROCEDURES;
 
   /* Image base path — resolve relative to this script file, not the HTML page */
   const BASE_PATH = (function () {
@@ -84,6 +110,31 @@
   function buildPanel(proc, idx) {
     const pairs = Array.from({ length: proc.pairs }, (_, i) => i);
 
+    /* Side-by-side layout para procedimentos com perfil/fotos não-frontais */
+    if (proc.displayMode === 'sideBySide') {
+      return `
+        <div
+          id="ad-panel-${proc.id}"
+          class="ad-panel${idx === 0 ? ' active' : ''}"
+          role="tabpanel"
+          data-proc="${proc.id}"
+          data-pairs="${proc.pairs}"
+        >
+          <div class="ad-stage">
+            <div class="ad-sb-grid">
+              <div class="ad-sb-item">
+                <img class="ad-img-sb-before" alt="Antes do procedimento" draggable="false" />
+                <span class="ad-lbl">Antes</span>
+              </div>
+              <div class="ad-sb-item">
+                <img class="ad-img-sb-after" alt="Depois do procedimento" draggable="false" />
+                <span class="ad-lbl" style="right:1rem;left:auto">Depois</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+
     return `
       <div
         id="ad-panel-${proc.id}"
@@ -115,8 +166,12 @@
             <img class="ad-img-before" alt="Antes do procedimento" draggable="false" />
 
             <!-- Labels -->
-            <span class="ad-lbl ad-lbl-antes" aria-hidden="true">Antes</span>
-            <span class="ad-lbl ad-lbl-depois" aria-hidden="true">Depois</span>
+            ${proc.reverseClip
+              ? `<span class="ad-lbl ad-lbl-depois" aria-hidden="true" style="left:1rem;right:auto">Depois</span>
+                 <span class="ad-lbl ad-lbl-antes" aria-hidden="true" style="right:1rem;left:auto">Antes</span>`
+              : `<span class="ad-lbl ad-lbl-antes" aria-hidden="true">Antes</span>
+                 <span class="ad-lbl ad-lbl-depois" aria-hidden="true">Depois</span>`
+            }
 
             <!-- Divider handle -->
             <div class="ad-handle" data-handle aria-hidden="true">
@@ -148,6 +203,28 @@
 
   /* ── Init slider interaction for a panel ── */
   function initPanel(panel, proc) {
+
+    /* Side-by-side: apenas carrega as imagens, sem interação de drag */
+    if (proc.displayMode === 'sideBySide') {
+      const imgBefore = panel.querySelector('.ad-img-sb-before');
+      const imgAfter  = panel.querySelector('.ad-img-sb-after');
+      const align = (proc.alignPairs && proc.alignPairs[0]) || {};
+      const base  = `${BASE_PATH}${proc.id}/`;
+      imgBefore.src = `${base}antes-1.jpg`;
+      imgAfter.src  = `${base}depois-1.jpg`;
+      if (align.before) imgBefore.style.objectPosition = align.before;
+      if (align.after)  imgAfter.style.objectPosition  = align.after;
+      if (align.scaleBefore) {
+        imgBefore.style.transform       = `scale(${align.scaleBefore})`;
+        imgBefore.style.transformOrigin = align.before || '50% 50%';
+      }
+      if (align.scaleAfter) {
+        imgAfter.style.transform       = `scale(${align.scaleAfter})`;
+        imgAfter.style.transformOrigin = align.after || '50% 50%';
+      }
+      return;
+    }
+
     const slider   = panel.querySelector('[data-slider]');
     const handle   = panel.querySelector('[data-handle]');
     const imgBefore = panel.querySelector('.ad-img-before');
@@ -170,7 +247,9 @@
       let pct = (clientX - rect.left) / rect.width;
       pct = Math.max(0.02, Math.min(0.98, pct));
       const pctPx = (pct * 100).toFixed(2);
-      imgBefore.style.clipPath = `inset(0 ${(100 - pct * 100).toFixed(2)}% 0 0)`;
+      imgBefore.style.clipPath = proc.reverseClip
+        ? `inset(0 0 0 ${(pct * 100).toFixed(2)}%)`
+        : `inset(0 ${(100 - pct * 100).toFixed(2)}% 0 0)`;
       handle.style.left = `${pctPx}%`;
     }
 
@@ -209,8 +288,24 @@
     const n = idx + 1;
     const base = `${BASE_PATH}${proc.id}/`;
 
+    /* Apply per-pair object-position alignment + optional translateX + scale */
+    const align = (proc.alignPairs && proc.alignPairs[idx]) || { before: '50% 50%', after: '50% 50%' };
+    imgBefore.style.objectPosition = align.before;
+    imgAfter.style.objectPosition  = align.after;
+
+    function buildTransform(tx, scale) {
+      const parts = [];
+      if (tx)              parts.push(`translateX(${tx}%)`);
+      if (scale && scale !== 1) parts.push(`scale(${scale})`);
+      return parts.join(' ') || '';
+    }
+    imgBefore.style.transform       = buildTransform(align.txBefore, align.scaleBefore);
+    imgAfter.style.transform        = buildTransform(align.txAfter,  align.scaleAfter);
+    imgBefore.style.transformOrigin = align.before || '50% 50%';
+    imgAfter.style.transformOrigin  = align.after  || '50% 50%';
+
     /* Reset slider to center */
-    imgBefore.style.clipPath = 'inset(0 50% 0 0)';
+    imgBefore.style.clipPath = proc.reverseClip ? 'inset(0 0 0 50%)' : 'inset(0 50% 0 0)';
     const handle = panel.querySelector('[data-handle]');
     if (handle) handle.style.left = '50%';
 

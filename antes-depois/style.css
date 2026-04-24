@@ -344,6 +344,31 @@
   opacity: .4;
 }
 
+/* ── Side-by-side layout (para fotos de perfil) ── */
+.ad-sb-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ad-sb-item {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--ad-radius);
+  overflow: hidden;
+  background: var(--ad-accent-07);
+  box-shadow: 0 8px 40px rgba(111, 59, 36, .1);
+}
+
+.ad-sb-item img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
 /* ── Scroll reveal ── */
 .ad-rv {
   opacity: 0;
