@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dra. Tatiane Jacobsen — Biomédica Esteta. Rejuvenescimento sem exageros. Tratamentos faciais e corporais com naturalidade e evidências científicas.">
+  <title>Dra. Tatiane Jacobsen — Biomédica Esteta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* =============================================
+       TOKENS — exact Epidermis palette
+       ============================================= */
+    :root {
+      --color-bg:         rgb(254, 245, 240);
+      --color-accent:     rgb(159, 84, 52);
+      --color-accent-dark: rgb(111, 59, 36);
+      --color-accent-60:  rgba(159, 84, 52, .6);
+      --color-accent-12:  rgba(159, 84, 52, .12);
+      --color-accent-07:  rgba(159, 84, 52, .07);
+      --color-accent-04:  rgba(159, 84, 52, .04);
+      --color-white-80:   rgba(254, 245, 240, .8);
+      --color-white-60:   rgba(254, 245, 240, .6);
+      --color-white-07:   rgba(254, 245, 240, .07);
+      --color-white:      #fff;
+      --color-overlay:    rgba(30, 18, 10, 0.25);
+
+      --font-main: 'Archivo', sans-serif;
+
+      --spacing-xs: 0.5rem;
+      --spacing-sm: 1rem;
+      --spacing-md: 1.5rem;
+      --spacing-lg: 3rem;
+      --spacing-xl: 6rem;
+      --spacing-2xl: 10rem;
+
+      --radius: 4px;
+      --pill: 100px;
+      --ease: cubic-bezier(.4, 0, .2, 1);
+      --max-w: 1200px;
+    }
+
+    /* =============================================
+       RESET
+       ============================================= */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body {
+      font-family: var(--font-main);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--color-accent-dark);
+      background: var(--color-bg);
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; height: auto; display: block; -webkit-user-drag: none; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    button { font-family: var(--font-main); cursor: pointer; border: none; background: none; }
+
+    /* =============================================
+       UTILITIES
+       ============================================= */
+    .wrap { width: 100%; max-width: var(--max-w); margin: 0 auto; padding: 0 var(--spacing-md); }
+
+    /* Scroll reveal */
+    .rv { opacity: 0; transform: translateY(20px); transition: opacity .65s var(--ease), transform .65s var(--ease); }
+    .rv.vis { opacity: 1; transform: none; }
+    .rv-d1 { transition-delay: .1s; }
+    .rv-d2 { transition-delay: .2s; }
+    .rv-d3 { transition-delay: .3s; }
+
+    /* Labels — Epidermis style */
+    .label {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--color-accent);
+    }
+
+    /* Heading — Epidermis typography */
+    .heading {
+      font-family: var(--font-main);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: .96;
+      color: var(--color-accent-dark);
+    }
+    .heading em { font-style: italic; }
+
+    /* Buttons — pill shape matching reference */
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--font-main);
+      font-size: 14px; font-weight: 500;
+      letter-spacing: .02em;
+      padding: 0 1.75rem; height: 48px;
+      border-radius: var(--pill);
+      border: 1.5px solid transparent;
+      transition: all .3s var(--ease);
+      white-space: nowrap; cursor: pointer;
+    }
+    .btn-accent { background: var(--color-accent); color: var(--color-bg); border-color: var(--color-accent); }
+    .btn-accent:hover { background: var(--color-accent-dark); border-color: var(--color-accent-dark); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(111,59,36,.2); }
+    .btn-white { background: var(--color-white); color: var(--color-accent-dark); border-color: var(--color-white); }
+    .btn-white:hover { background: var(--color-bg); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,.12); }
+    .btn-white-outline { background: transparent; color: var(--color-white); border-color: rgba(255,255,255,.5); }
+    .btn-white-outline:hover { background: rgba(255,255,255,.12); border-color: var(--color-white); transform: translateY(-2px); }
+    .btn-outline-dark { background: transparent; color: var(--color-accent-dark); border-color: var(--color-accent-12); }
+    .btn-outline-dark:hover { border-color: var(--color-accent); color: var(--color-accent); transform: translateY(-2px); }
+
+    /* =============================================
+       1. NAVBAR — floating pill, Epidermis exact
+       ============================================= */
+    .navbar {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      width: calc(100% - 32px); max-width: var(--max-w);
+      z-index: 100;
+      background: rgba(254, 245, 240, .92);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--color-accent-12);
+      border-radius: var(--pill);
+      padding: 6px 6px 6px 22px;
+      box-shadow: 0 2px 16px rgba(111,59,36,.06);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .navbar.scrolled {
+      border-color: rgba(159,84,52,.25);
+      box-shadow: 0 6px 32px rgba(111,59,36,.12);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    /* Logo */
+    .nav-logo {
+      display: flex; align-items: center; gap: .5rem; flex-shrink: 0;
+    }
+    .nav-logo-icon {
+      width: 18px; height: 18px; color: var(--color-accent);
+    }
+    .nav-logo-text {
+      font-size: .85rem; font-weight: 400; color: var(--color-accent-dark);
+      letter-spacing: .01em;
+    }
+    /* Links */
+    .nav-links {
+      display: flex; gap: 1.75rem;
+      position: absolute; left: 50%; transform: translateX(-50%);
+    }
+    .nav-links a {
+      font-size: 13px; font-weight: 400; color: var(--color-accent-dark);
+      letter-spacing: .01em; transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--color-accent); }
+    /* CTA */
+    .nav-cta {
+      font-size: 13px; font-weight: 500; height: 36px; padding: 0 1.25rem;
+      border-radius: var(--pill);
+      border: 1.5px solid var(--color-accent);
+      color: var(--color-accent); background: transparent;
+      display: inline-flex; align-items: center;
+      transition: all .25s; letter-spacing: .02em;
+    }
+    .nav-cta:hover { background: var(--color-accent); color: var(--color-bg); }
+    /* Hamburger */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; padding: 6px; }
+    .nav-hamburger span { display: block; width: 20px; height: 1.5px; background: var(--color-accent-dark); transition: .3s; }
+
+    /* =============================================
+       2. HERO — 100vh, centered white text
+       ============================================= */
+    .hero {
+      position: relative; height: 100vh; min-height: 680px;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 1;
+      user-select: none; -webkit-user-select: none;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: 40% 30%;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0; z-index: 2;
+      background: var(--color-overlay);
+    }
+    .hero-content {
+      position: relative; z-index: 3;
+      padding: 0 var(--spacing-md);
+    }
+    .hero-title {
+      font-family: var(--font-main);
+      font-size: clamp(3rem, 6.5vw, 96px);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+      line-height: .96;
+      color: var(--color-white);
+      margin-bottom: 2.5rem;
+    }
+    .hero-sub {
+      font-size: 15px; font-weight: 300;
+      color: rgba(255,255,255,.85);
+      max-width: 480px; margin: -1rem auto 2.5rem;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap;
+    }
+
+    /* =============================================
+       3. ACTION BLOCKS — overlapping hero bottom
+       ============================================= */
+    .action-blocks {
+      position: relative; z-index: 5;
+      margin-top: -80px;
+      padding-bottom: calc(var(--spacing-xl) + 1rem);
+    }
+    .action-blocks-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--color-accent-12);
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 4px 24px rgba(111,59,36,.08);
+    }
+    .action-block {
+      background: var(--color-bg); padding: 2rem 1.75rem;
+      display: block; transition: background .3s;
+    }
+    .action-block:hover { background: var(--color-white); }
+    .action-block-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+    .action-block-label {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--color-accent);
+    }
+    .action-block-arrow {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--color-accent-12);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent); transition: all .25s;
+    }
+    .action-block:hover .action-block-arrow {
+      background: var(--color-accent); color: var(--color-bg);
+      border-color: var(--color-accent);
+    }
+    .action-block-title {
+      font-family: var(--font-main);
+      font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+      font-weight: 400; letter-spacing: -0.02em;
+      line-height: 1.2; color: var(--color-accent-dark);
+    }
+
+    /* =============================================
+       4. EDITORIAL PHOTOS — 3 side-by-side
+       ============================================= */
+    .editorial { padding: 0 0 var(--spacing-xl); }
+    .editorial-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }
+    .editorial-img {
+      height: 480px; border-radius: 6px; overflow: hidden;
+      background: var(--color-accent-04);
+    }
+    .editorial-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: 50% 25%;
+      transition: transform 5s ease;
+    }
+    .editorial-img:hover img { transform: scale(1.04); }
+    .editorial-before-after img {
+      object-position: 50% 50%;
+      object-fit: cover;
+    }
+
+    /* =============================================
+       4.5 ESPECIALIDADES — 8 treatment cards
+       ============================================= */
+    .especialidades { padding: var(--spacing-xl) 0 var(--spacing-lg); }
+    .especialidades-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap;
+    }
+    .especialidades-title {
+      font-family: var(--font-main);
+      font-size: clamp(2rem, 3.4vw, 3rem);
+      font-weight: 400; letter-spacing: -0.03em;
+      line-height: 1.02; color: var(--color-accent-dark);
+      max-width: 560px;
+    }
+    .especialidades-title em { font-style: italic; color: var(--color-accent); }
+    .especialidades-intro {
+      font-size: 14px; color: var(--color-accent-60);
+      line-height: 1.7; max-width: 360px;
+    }
+    .especialidades-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .esp-card {
+      display: block;
+      background: var(--color-bg);
+      border: 1px solid var(--color-accent-12);
+      border-radius: 24px;
+      padding: 32px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    .esp-card:hover {
+      background: rgba(159, 84, 52, 0.04);
+      transform: translateY(-4px);
+      border-color: rgba(159, 84, 52, .22);
+    }
+    .esp-card-head {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; margin-bottom: 1.25rem;
+    }
+    .esp-card-icon {
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent);
+      flex-shrink: 0;
+    }
+    .esp-card-icon svg { width: 100%; height: 100%; }
+    .esp-card-arrow {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1px solid var(--color-accent-12);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent);
+      flex-shrink: 0;
+      transition: all .3s ease;
+    }
+    .esp-card:hover .esp-card-arrow {
+      background: var(--color-accent);
+      color: var(--color-bg);
+      border-color: var(--color-accent);
+      transform: translate(2px, -2px);
+    }
+    .esp-card-name {
+      font-family: var(--font-main);
+      font-size: 22px; font-weight: 400;
+      letter-spacing: -0.02em; line-height: 1.15;
+      color: var(--color-accent);
+      margin-bottom: .6rem;
+    }
+    .esp-card-desc {
+      font-family: var(--font-main);
+      font-size: 14px; font-weight: 400;
+      line-height: 1.7;
+      color: var(--color-accent-60);
+    }
+
+    /* =============================================
+       5. ABOUT — centered text
+       ============================================= */
+    .about { padding: 0 0 var(--spacing-xl); text-align: center; }
+    .about-inner { max-width: 760px; margin: 0 auto; }
+    .about-text {
+      font-family: var(--font-main);
+      font-size: clamp(1.6rem, 2.8vw, 2.4rem);
+      font-weight: 400; letter-spacing: -0.02em;
+      line-height: 1.25; color: var(--color-accent-dark);
+      margin-top: 1.25rem;
+    }
+
+    /* =============================================
+       6. FULL-WIDTH FACE
+       ============================================= */
+    .face-full {
+      position: relative; overflow: hidden;
+    }
+    .face-full img {
+      width: 100%; height: auto;
+      display: block;
+    }
+    .face-full-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(111,59,36,.2) 0%, transparent 40%);
+    }
+
+    /* =============================================
+       7. TESTIMONIALS — alternating layout
+       ============================================= */
+    .testimonials { padding: var(--spacing-sm) 0 var(--spacing-lg); }
+    .testi-item {
+      display: grid; grid-template-columns: 240px 1fr;
+      gap: 2rem; align-items: start;
+      padding: var(--spacing-md) 0;
+    }
+    .testi-item:nth-child(even) {
+      grid-template-columns: 1fr 240px;
+    }
+    .testi-item--no-photo {
+      grid-template-columns: 1fr !important;
+      max-width: 720px;
+    }
+    .testi-item:nth-child(even) .testi-photo { order: 2; }
+    .testi-item:nth-child(even) .testi-content { order: 1; }
+    .testi-photo {
+      height: 260px; border-radius: 6px; overflow: hidden;
+      background: var(--color-accent-04);
+    }
+    .testi-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: 50% 20%;
+    }
+    .testi-name {
+      font-size: 13px; font-weight: 500; color: var(--color-accent-dark);
+      margin-bottom: .6rem;
+    }
+    .testi-quote {
+      font-family: var(--font-main);
+      font-size: clamp(.95rem, 1.2vw, 1.05rem);
+      font-weight: 400; letter-spacing: -0.01em;
+      line-height: 1.5; color: var(--color-accent-dark);
+      margin-bottom: 1.25rem;
+    }
+    .testi-details {
+      display: flex; gap: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-accent-12);
+    }
+    .testi-detail-label {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--color-accent); margin-bottom: .2rem;
+    }
+    .testi-detail-value {
+      font-size: .92rem; font-weight: 400; color: var(--color-accent-dark);
+    }
+    .testi-stars { display: inline-flex; gap: 2px; }
+    .testi-stars svg { width: 12px; height: 12px; color: var(--color-accent); }
+
+    /* =============================================
+       8. CTA BAR
+       ============================================= */
+    .cta-bar { padding: var(--spacing-lg) 0; }
+    .cta-bar-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem;
+      background: var(--color-white);
+      border: 1px solid var(--color-accent-12);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 1.75rem 2rem;
+    }
+    .cta-bar-info {
+      display: flex; align-items: center; gap: 1.25rem; flex: 1;
+    }
+    .cta-bar-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--color-accent-07);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-accent); flex-shrink: 0;
+    }
+    .cta-bar-label {
+      font-size: 11px; font-weight: 500;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--color-accent); margin-bottom: .2rem;
+    }
+    .cta-bar-value {
+      font-family: var(--font-main);
+      font-size: 16px; font-weight: 400; letter-spacing: -0.01em;
+      color: var(--color-accent-dark); line-height: 1.35;
+      display: flex; align-items: center; gap: .5rem;
+      transition: color .2s;
+    }
+    .cta-bar-value:hover { color: var(--color-accent); }
+    .cta-bar-value svg {
+      width: 14px; height: 14px;
+      opacity: .5; transition: opacity .2s, transform .2s;
+    }
+    .cta-bar-value:hover svg { opacity: 1; transform: translate(2px, -2px); }
+    .cta-bar-divider {
+      width: 1px; height: 44px; background: var(--color-accent-12);
+    }
+
+    /* =============================================
+       9. FOOTER — dark terra
+       ============================================= */
+    .footer {
+      background: var(--color-accent-dark);
+      padding: 3rem 0 0;
+      position: relative; overflow: hidden;
+    }
+    .footer-links-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem; padding-bottom: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-white-07);
+      text-align: center;
+    }
+    .footer-link {
+      font-family: var(--font-main);
+      font-size: clamp(1.6rem, 3vw, 2.6rem);
+      font-weight: 400; letter-spacing: -0.02em;
+      color: var(--color-white-60);
+      transition: color .25s; display: block; line-height: 1.3;
+    }
+    .footer-link:hover { color: var(--color-bg); }
+    .footer-bottom {
+      display: flex; align-items: center; justify-content: center;
+      padding: 2rem 0;
+    }
+    .footer-copy {
+      font-size: 13px; color: var(--color-white-60);
+    }
+    /* Decorative SVGs */
+    .footer-decor {
+      padding: 1rem 0;
+      display: flex; justify-content: space-around; align-items: center;
+      opacity: .12;
+    }
+    .footer-decor svg {
+      width: 80px; height: 80px; color: var(--color-bg);
+    }
+
+    /* =============================================
+       MOBILE NAV
+       ============================================= */
+    .mobile-nav {
+      display: none; position: fixed; inset: 0;
+      background: var(--color-bg); z-index: 200;
+      flex-direction: column; align-items: center;
+      justify-content: center; gap: 2rem;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-size: 1.8rem; font-weight: 300;
+      color: var(--color-accent-dark); transition: color .2s;
+    }
+    .mobile-nav a:hover { color: var(--color-accent); }
+    .mobile-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* =============================================
+       RESPONSIVE
+       ============================================= */
+    @media (max-width: 1024px) {
+      .navbar { top: 10px; width: calc(100% - 20px); }
+      .action-blocks-grid { grid-template-columns: 1fr; }
+      .editorial-grid { grid-template-columns: 1fr 1fr; }
+      .editorial-img:last-child { display: none; }
+      .editorial-img { height: 380px; }
+      .testi-item, .testi-item:nth-child(even) { grid-template-columns: 1fr; }
+      .testi-item:nth-child(even) .testi-photo { order: 0; }
+      .testi-item:nth-child(even) .testi-content { order: 0; }
+      .testi-photo { height: 300px; }
+      .footer-links-grid { grid-template-columns: repeat(2, 1fr); }
+      /* CTA bar tablet — elegant stack */
+      .cta-bar-inner {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.75rem 1.5rem;
+        text-align: center;
+      }
+      .cta-bar-info {
+        flex-direction: row;
+        justify-content: center;
+        text-align: left;
+        gap: 1rem;
+      }
+      .cta-bar-value { justify-content: flex-start; }
+      .cta-bar-divider { display: none; }
+      .cta-bar .btn { width: 100%; max-width: 320px; justify-content: center; }
+    }
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .hero-title { font-size: 2.6rem; }
+      .editorial-grid { grid-template-columns: 1fr; }
+      .editorial-img:last-child { display: block; }
+      .editorial-img { height: 300px; }
+      .testi-details { flex-direction: column; gap: 1rem; }
+      .footer-links-grid { grid-template-columns: 1fr; }
+      .especialidades-grid { grid-template-columns: 1fr; }
+      .esp-card { padding: 26px 24px; border-radius: 20px; }
+      .esp-card-name { font-size: 20px; }
+    }
+    @media (max-width: 480px) {
+      .hero-title { font-size: 2.2rem; }
+      .cta-bar-info { flex-direction: column; text-align: center; gap: .75rem; }
+      .cta-bar-value { justify-content: center; font-size: 15px; }
+      .cta-bar-icon { margin: 0 auto; }
+    }
+  </style>
+  <link rel="stylesheet" href="antes-depois/style.css">
+</head>
+<body>
+
+  <!-- Mobile nav -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Menu mobile">
+    <button class="mobile-close" id="mobileClose" aria-label="Fechar">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <a href="#">Home</a>
+    <a href="#especialidades">Especialidades</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#mentorias">Mentorias</a>
+    <a href="#contato">Contato</a>
+  </nav>
+
+  <!-- 1. NAVBAR — floating pill -->
+  <header class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg class="nav-logo-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2H22l-6 4.8 2.4 7.2L12 16.4l-6.4 4.8L8 14l-6-4.8h7.6z"/></svg>
+        <span class="nav-logo-text">Dra. Tatiane Jacobsen</span>
+      </a>
+      <nav class="nav-links" aria-label="Menu principal">
+        <a href="#">Home</a>
+        <a href="#especialidades">Especialidades</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#mentorias">Mentorias</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <a href="#contato" class="nav-cta">Agendar</a>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 2. HERO -->
+    <section class="hero" aria-label="Hero">
+      <div class="hero-bg">
+        <img src="src/assets/images/hero-face.jpg"
+             alt="Mulher com pele saudável e radiante, iluminação dourada quente"
+             loading="eager">
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <h1 class="hero-title rv">Rejuvenescimento<br>sem exageros</h1>
+        <p class="hero-sub rv rv-d1">O rejuvenescimento pode ser natural e equilibrado, refletindo a sua beleza autêntica.</p>
+        <div class="hero-actions rv rv-d2">
+          <a href="#contato" class="btn btn-white">Quero agendar</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ACTION BLOCKS -->
+    <section class="action-blocks" aria-label="Ações">
+      <div class="wrap">
+        <div class="action-blocks-grid rv">
+          <a href="#especialidades" class="action-block">
+            <div class="action-block-top">
+              <span class="action-block-label">Especialidades</span>
+              <span class="action-block-arrow">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </span>
+            </div>
+            <h3 class="action-block-title">Conheça nossas<br>especialidades</h3>
+          </a>
+          <a href="#sobre" class="action-block">
+            <div class="action-block-top">
+              <span class="action-block-label">Sobre</span>
+              <span class="action-block-arrow">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </span>
+            </div>
+            <h3 class="action-block-title">Biomédica Esteta<br>com 15 anos de formação</h3>
+          </a>
+          <a href="#mentorias" class="action-block">
+            <div class="action-block-top">
+              <span class="action-block-label">Mentorias</span>
+              <span class="action-block-arrow">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </span>
+            </div>
+            <h3 class="action-block-title">Mentorias para<br>profissionais da estética</h3>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. EDITORIAL PHOTOS — 3 images -->
+    <section class="editorial" aria-label="Fotos editoriais">
+      <div class="wrap">
+        <div class="editorial-grid">
+          <div class="editorial-img rv">
+            <img src="src/assets/images/editorial-hands.jpg"
+                 alt="Procedimento estético delicado sendo realizado com precisão"
+                 loading="lazy">
+          </div>
+          <div class="editorial-img editorial-before-after rv rv-d1">
+            <img src="src/assets/images/editorial-skin.jpg"
+                 alt="Antes e depois — redução de linhas de expressão na testa"
+                 loading="lazy">
+          </div>
+          <div class="editorial-img rv rv-d2">
+            <img src="src/assets/images/face-closeup.jpg"
+                 alt="Rosto feminino com pele radiante e cuidada"
+                 loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4.5 ESPECIALIDADES — 8 treatment cards -->
+    <section class="especialidades" id="especialidades" aria-labelledby="esp-title">
+      <div class="wrap">
+        <div class="especialidades-header">
+          <div>
+            <span class="label rv" style="margin-bottom:1rem;display:block">Especialidades</span>
+            <h2 class="especialidades-title rv rv-d1" id="esp-title">
+              Tratamentos que valorizam<br><em>a sua naturalidade</em>
+            </h2>
+          </div>
+          <p class="especialidades-intro rv rv-d2">
+            Protocolos personalizados, respaldados em evidências científicas,
+            para resultados naturais e duradouros.
+          </p>
+        </div>
+
+        <div class="especialidades-grid">
+          <a href="#contato" class="esp-card rv">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6c-4 4-8 8-8 14a8 8 0 0016 0c0-6-4-10-8-14z"/><path d="M20 16v10"/><path d="M16 22h8"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Bioestimulador de Colágeno</h3>
+            <p class="esp-card-desc">Restaure a firmeza e elasticidade da sua pele. Estimula a produção natural de colágeno.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv rv-d1">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6v20"/><path d="M14 12l6-6 6 6"/><circle cx="20" cy="30" r="4"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Drug Delivery</h3>
+            <p class="esp-card-desc">Estimula a regeneração natural da pele. Potencializa a penetração de ativos como antioxidantes e vitaminas.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14c0-4 4-8 8-8s8 4 8 8v12c0 4-4 8-8 8s-8-4-8-8V14z"/><path d="M16 18h8"/><path d="M17 22h6"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Esvaziadores de Gordura</h3>
+            <p class="esp-card-desc">Elimina gordura localizada de forma segura. Remodela áreas como abdômen, flancos e coxas.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv rv-d1">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="20" r="12"/><path d="M14 20l4 4 8-8"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Lavieen</h3>
+            <p class="esp-card-desc">Renova a pele com estímulo à regeneração celular. Reduz manchas e uniformiza o tom. Resultados visíveis em curto prazo.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 8c-5 0-9 4-9 9 0 6 9 15 9 15s9-9 9-15c0-5-4-9-9-9z"/><circle cx="20" cy="17" r="3"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Preenchimento Facial</h3>
+            <p class="esp-card-desc">Restaura o volume facial perdido. Promove rejuvenescimento e harmoniza proporções.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv rv-d1">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6c6 0 10 5 10 11s-4 17-10 17S10 23 10 17s4-11 10-11z"/><path d="M16 18c0-2 2-4 4-4s4 2 4 4"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Preenchimento de Glúteos</h3>
+            <p class="esp-card-desc">Aumenta o volume de forma segura e não cirúrgica. Modela a silhueta com curvas naturais e harmônicas.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20c4-6 8-6 12 0 4-6 8-6 12 0"/><path d="M8 20c4 6 8 6 12 0 4 6 8 6 12 0"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Preenchimento Labial</h3>
+            <p class="esp-card-desc">Melhora o formato e aumenta o volume dos lábios. Realça a definição com um toque de sensualidade.</p>
+          </a>
+
+          <a href="#contato" class="esp-card rv rv-d1">
+            <div class="esp-card-head">
+              <div class="esp-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 24c2-8 6-12 10-12s8 4 10 12"/><path d="M10 24h20"/><circle cx="15" cy="22" r="1.5" fill="currentColor"/><circle cx="25" cy="22" r="1.5" fill="currentColor"/></svg>
+              </div>
+              <div class="esp-card-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg></div>
+            </div>
+            <h3 class="esp-card-name">Toxina Botulínica</h3>
+            <p class="esp-card-desc">Relaxa a musculatura, suavizando rugas e linhas de expressão. Resultados naturais para uma aparência renovada.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ABOUT TEXT -->
+    <section class="about" id="sobre" aria-labelledby="about-text">
+      <div class="wrap">
+        <div class="about-inner">
+          <span class="label rv">Sobre</span>
+          <p class="about-text rv rv-d1" id="about-text">
+            Sou Biomédica, com 15 anos de formação (6 deles dedicados à Estética avançada).
+            Sou especialista em Biomedicina estética e doutora em Ciências da Saúde.
+            Minha trajetória profissional me oportunizou também atuar como palestrante e docente,
+            compartilhando meus conhecimentos com estudantes e profissionais em diversas universidades no Brasil.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. FULL-WIDTH FACE -->
+    <section class="face-full" aria-label="Imagem destaque">
+      <img src="src/assets/images/treat-bio.jpg"
+           alt="Close de rosto feminino com pele radiante"
+           loading="lazy">
+      <div class="face-full-overlay"></div>
+    </section>
+
+    <!-- 7. TESTIMONIALS -->
+    <section class="testimonials" id="mentorias" aria-label="Depoimentos">
+      <div class="wrap">
+        <div class="testi-item testi-item--no-photo rv">
+          <div class="testi-content">
+            <div class="testi-name">Mentorias</div>
+            <p class="testi-quote">
+              Na área da estética, acredito que o aprendizado nunca para. Por isso, além de
+              oferecer atendimentos de alta qualidade, dedico-me a compartilhar meu conhecimento
+              por meio de mentorias personalizadas e palestras inspiradoras. Minha missão é
+              capacitar outros profissionais, ajudando-os a alcançar excelência em suas práticas
+              e a promover bem-estar e autoestima em seus pacientes.
+            </p>
+            <div class="testi-details">
+              <div>
+                <div class="testi-detail-label">Modalidade</div>
+                <div class="testi-detail-value">Mentoria personalizada</div>
+              </div>
+              <div>
+                <div class="testi-detail-label">Formato</div>
+                <div class="testi-detail-value">Online + Presencial</div>
+              </div>
+              <div>
+                <div class="testi-detail-label">Contato</div>
+                <div class="testi-detail-value">(51) 98042-6362</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testi-item testi-item--no-photo rv">
+          <div class="testi-content">
+            <div class="testi-name">Inovação e atualização constante</div>
+            <p class="testi-quote">
+              Estou sempre em busca de inovação e atualização. Participo regularmente de
+              congressos, cursos e workshops, tanto nacionais quanto internacionais, para
+              acompanhar as tendências e as mais recentes tecnologias do mercado estético.
+              Esse compromisso reflete diretamente na qualidade dos serviços que ofereço
+              e no impacto positivo que busco gerar em cada pessoa com quem trabalho.
+            </p>
+            <div class="testi-details">
+              <div>
+                <div class="testi-detail-label">Compromisso</div>
+                <div class="testi-detail-value">Conhecimento transforma</div>
+              </div>
+              <div>
+                <div class="testi-detail-label">WhatsApp</div>
+                <div class="testi-detail-value">
+                  <a href="https://wa.me/5551980426362" target="_blank" rel="noopener" style="color:inherit">Quero ser mentorada</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. CTA BAR -->
+    <section class="cta-bar" id="contato" aria-label="Contato">
+      <div class="wrap">
+        <div class="cta-bar-inner rv">
+          <div class="cta-bar-info">
+            <div class="cta-bar-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="cta-bar-label">Endereço</div>
+              <a href="https://maps.app.goo.gl/3BuUrFZKeNgzAEtr9" target="_blank" rel="noopener" class="cta-bar-value">
+                Rua João Telles, 542 — Sala 1005
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="cta-bar-divider" aria-hidden="true"></div>
+          <a href="https://maps.app.goo.gl/3BuUrFZKeNgzAEtr9" target="_blank" rel="noopener" class="btn btn-outline-dark">
+            Ver no Google Maps
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 10. ANTES E DEPOIS -->
+  <div id="antes-depois"></div>
+
+  <!-- 9. FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-links-grid rv">
+        <a href="#especialidades" class="footer-link">Especialidades</a>
+        <a href="#sobre" class="footer-link">Sobre</a>
+        <a href="#mentorias" class="footer-link">Mentorias</a>
+        <a href="https://wa.me/5551980426362" target="_blank" rel="noopener" class="footer-link">WhatsApp</a>
+        <a href="https://www.instagram.com/dratatianejacobsen" target="_blank" rel="noopener" class="footer-link">Instagram</a>
+        <a href="#contato" class="footer-link">Contato</a>
+      </div>
+      <div class="footer-bottom">
+        <span class="footer-copy">&copy; 2025 Dra. Tatiane Jacobsen. Todos os direitos reservados. &nbsp;·&nbsp; CNPJ 56.603.964/0001-89</span>
+      </div>
+    </div>
+    <div class="footer-decor" aria-hidden="true">
+      <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1"><circle cx="100" cy="100" r="60"/><circle cx="100" cy="100" r="35"/><line x1="100" y1="25" x2="100" y2="175"/><line x1="25" y1="100" x2="175" y2="100"/><line x1="45" y1="45" x2="155" y2="155"/><line x1="155" y1="45" x2="45" y2="155"/></svg>
+      <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1"><circle cx="100" cy="100" r="70"/><circle cx="100" cy="100" r="28"/><path d="M100 30L100 170 M30 100L170 100"/><circle cx="100" cy="30" r="7" fill="currentColor"/><circle cx="100" cy="170" r="7" fill="currentColor"/><circle cx="30" cy="100" r="7" fill="currentColor"/><circle cx="170" cy="100" r="7" fill="currentColor"/></svg>
+      <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1"><circle cx="100" cy="100" r="60"/><circle cx="100" cy="100" r="35"/><line x1="100" y1="25" x2="100" y2="175"/><line x1="25" y1="100" x2="175" y2="100"/><line x1="45" y1="45" x2="155" y2="155"/><line x1="155" y1="45" x2="45" y2="155"/></svg>
+    </div>
+  </footer>
+
+  <script>
+    // Navbar scroll
+    const nb = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nb.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    // Mobile nav
+    const ham = document.getElementById('navHamburger');
+    const mn = document.getElementById('mobileNav');
+    const mc = document.getElementById('mobileClose');
+    ham.addEventListener('click', () => { mn.classList.add('open'); document.body.style.overflow = 'hidden'; });
+    const closeMn = () => { mn.classList.remove('open'); document.body.style.overflow = ''; };
+    mc.addEventListener('click', closeMn);
+    mn.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMn));
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+      });
+    }, { threshold: .1, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.rv').forEach(el => obs.observe(el));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', e => {
+        const id = link.getAttribute('href');
+        if (id === '#') return;
+        const t = document.querySelector(id);
+        if (!t) return;
+        e.preventDefault();
+        window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' });
+      });
+    });
+  </script>
+  <script src="antes-depois/script.js"></script>
+  <!-- EDITOR TEMPORÁRIO — remover após ajustar as fotos -->
+  <script src="antes-depois/editor.js"></script>
+</body>
+</html>
