@@ -31,12 +31,15 @@
   }
 
   function applyConf(img, conf) {
-    img.style.objectPosition  = `${conf.x}% ${conf.y}%`;
-    const parts = [];
-    if (conf.tx) parts.push(`translateX(${conf.tx}%)`);
-    if (conf.scale !== 1) parts.push(`scale(${conf.scale})`);
-    img.style.transform       = parts.join(' ') || '';
-    img.style.transformOrigin = `${conf.x}% ${conf.y}%`;
+    // objectPosition não tem efeito visível quando a imagem cobre 100% do container.
+    // Usamos translate para reposicionar x/y também.
+    const scale  = conf.scale || 1;
+    const tx     = conf.tx    || 0;
+    const moveX  = (50 - conf.x) * 0.5; // slider 0-100 → translate +25%..−25%
+    const moveY  = (50 - conf.y) * 0.5;
+    img.style.transform       = `translate(${moveX + tx}%, ${moveY}%) scale(${scale})`;
+    img.style.transformOrigin = 'center center';
+    img.style.objectPosition  = '50% 50%';
   }
 
   /* ── Detecta proc/pair de um painel ── */
