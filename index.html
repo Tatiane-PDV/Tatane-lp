@@ -386,6 +386,7 @@
       width: 100%; height: auto;
       display: block; border-radius: 4px;
     }
+    /* Moldura decorativa offset */
     .face-frame::before {
       content: '';
       position: absolute;
@@ -394,6 +395,7 @@
       border-radius: 6px;
       pointer-events: none;
     }
+    /* Ornamentos de canto — linhas accent */
     .face-frame::after {
       content: '';
       position: absolute;
@@ -401,15 +403,20 @@
       border-radius: 6px;
       pointer-events: none;
       background:
+        /* canto sup esq */
         linear-gradient(var(--color-accent), var(--color-accent)) top left / 40px 2px no-repeat,
         linear-gradient(var(--color-accent), var(--color-accent)) top left / 2px 40px no-repeat,
+        /* canto sup dir */
         linear-gradient(var(--color-accent), var(--color-accent)) top right / 40px 2px no-repeat,
         linear-gradient(var(--color-accent), var(--color-accent)) top right / 2px 40px no-repeat,
+        /* canto inf esq */
         linear-gradient(var(--color-accent), var(--color-accent)) bottom left / 40px 2px no-repeat,
         linear-gradient(var(--color-accent), var(--color-accent)) bottom left / 2px 40px no-repeat,
+        /* canto inf dir */
         linear-gradient(var(--color-accent), var(--color-accent)) bottom right / 40px 2px no-repeat,
         linear-gradient(var(--color-accent), var(--color-accent)) bottom right / 2px 40px no-repeat;
     }
+    /* Badge flutuante */
     .face-badge {
       position: absolute;
       bottom: 24px; right: -10px;
@@ -431,6 +438,7 @@
       from { opacity: 0; transform: translateY(8px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    /* Linha decorativa lateral */
     .face-line {
       position: absolute;
       left: -10px; top: 50%;
@@ -446,6 +454,19 @@
        7. TESTIMONIALS — alternating layout
        ============================================= */
     .testimonials { padding: var(--spacing-sm) 0 var(--spacing-lg); }
+    .mentorias-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .mentorias-header .label {
+      display: block; margin-bottom: .75rem;
+    }
+    .mentorias-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
     .testi-item {
       display: grid; grid-template-columns: 240px 1fr;
       gap: 2rem; align-items: start;
@@ -456,7 +477,11 @@
     }
     .testi-item--no-photo {
       grid-template-columns: 1fr !important;
-      max-width: 520px;
+      max-width: 100%;
+      padding: 2rem;
+      background: var(--color-accent-04);
+      border: 1px solid var(--color-accent-12);
+      border-radius: 6px;
     }
     .testi-item:nth-child(even) .testi-photo { order: 2; }
     .testi-item:nth-child(even) .testi-content { order: 1; }
@@ -608,6 +633,7 @@
       .editorial-grid { grid-template-columns: 1fr 1fr; }
       .editorial-img:last-child { display: none; }
       .editorial-img { height: 380px; }
+      .mentorias-grid { grid-template-columns: 1fr; }
       .testi-item, .testi-item:nth-child(even) { grid-template-columns: 1fr; }
       .testi-item:nth-child(even) .testi-photo { order: 0; }
       .testi-item:nth-child(even) .testi-content { order: 0; }
@@ -899,54 +925,59 @@
     </section>
 
     <!-- 7. TESTIMONIALS -->
-    <section class="testimonials" id="mentorias" aria-label="Depoimentos">
+    <section class="testimonials" id="mentorias" aria-label="Mentorias">
       <div class="wrap">
-        <div class="testi-item testi-item--no-photo rv">
-          <div class="testi-content">
-            <div class="testi-name">Mentorias</div>
-            <p class="testi-quote">
-              Na área da estética, acredito que o aprendizado nunca para. Por isso, além de
-              oferecer atendimentos de alta qualidade, dedico-me a compartilhar meu conhecimento
-              por meio de mentorias personalizadas e palestras inspiradoras. Minha missão é
-              capacitar outros profissionais, ajudando-os a alcançar excelência em suas práticas
-              e a promover bem-estar e autoestima em seus pacientes.
-            </p>
-            <div class="testi-details">
-              <div>
-                <div class="testi-detail-label">Modalidade</div>
-                <div class="testi-detail-value">Mentoria personalizada</div>
-              </div>
-              <div>
-                <div class="testi-detail-label">Formato</div>
-                <div class="testi-detail-value">Online + Presencial</div>
-              </div>
-              <div>
-                <div class="testi-detail-label">Contato</div>
-                <div class="testi-detail-value">(51) 98042-6362</div>
+        <div class="mentorias-header rv">
+          <span class="label">Mentorias</span>
+        </div>
+        <div class="mentorias-grid">
+          <div class="testi-item testi-item--no-photo rv">
+            <div class="testi-content">
+              <div class="testi-name">Para profissionais da estética</div>
+              <p class="testi-quote">
+                Na área da estética, acredito que o aprendizado nunca para. Por isso, além de
+                oferecer atendimentos de alta qualidade, dedico-me a compartilhar meu conhecimento
+                por meio de mentorias personalizadas e palestras inspiradoras. Minha missão é
+                capacitar outros profissionais, ajudando-os a alcançar excelência em suas práticas
+                e a promover bem-estar e autoestima em seus pacientes.
+              </p>
+              <div class="testi-details">
+                <div>
+                  <div class="testi-detail-label">Modalidade</div>
+                  <div class="testi-detail-value">Mentoria personalizada</div>
+                </div>
+                <div>
+                  <div class="testi-detail-label">Formato</div>
+                  <div class="testi-detail-value">Online + Presencial</div>
+                </div>
+                <div>
+                  <div class="testi-detail-label">Contato</div>
+                  <div class="testi-detail-value">(51) 98042-6362</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="testi-item testi-item--no-photo rv">
-          <div class="testi-content">
-            <div class="testi-name">Inovação e atualização constante</div>
-            <p class="testi-quote">
-              Estou sempre em busca de inovação e atualização. Participo regularmente de
-              congressos, cursos e workshops, tanto nacionais quanto internacionais, para
-              acompanhar as tendências e as mais recentes tecnologias do mercado estético.
-              Esse compromisso reflete diretamente na qualidade dos serviços que ofereço
-              e no impacto positivo que busco gerar em cada pessoa com quem trabalho.
-            </p>
-            <div class="testi-details">
-              <div>
-                <div class="testi-detail-label">Compromisso</div>
-                <div class="testi-detail-value">Conhecimento transforma</div>
-              </div>
-              <div>
-                <div class="testi-detail-label">WhatsApp</div>
-                <div class="testi-detail-value">
-                  <a href="https://wa.me/5551980426362" target="_blank" rel="noopener" style="color:inherit">Quero ser mentorada</a>
+          <div class="testi-item testi-item--no-photo rv rv-d1">
+            <div class="testi-content">
+              <div class="testi-name">Inovação e atualização constante</div>
+              <p class="testi-quote">
+                Estou sempre em busca de inovação e atualização. Participo regularmente de
+                congressos, cursos e workshops, tanto nacionais quanto internacionais, para
+                acompanhar as tendências e as mais recentes tecnologias do mercado estético.
+                Esse compromisso reflete diretamente na qualidade dos serviços que ofereço
+                e no impacto positivo que busco gerar em cada pessoa com quem trabalho.
+              </p>
+              <div class="testi-details">
+                <div>
+                  <div class="testi-detail-label">Compromisso</div>
+                  <div class="testi-detail-value">Conhecimento transforma</div>
+                </div>
+                <div>
+                  <div class="testi-detail-label">WhatsApp</div>
+                  <div class="testi-detail-value">
+                    <a href="https://wa.me/5551980426362" target="_blank" rel="noopener" style="color:inherit">Quero ser mentorada</a>
+                  </div>
                 </div>
               </div>
             </div>
