@@ -116,8 +116,14 @@
         cursor:pointer; margin-top:4px;
       ">Copiar Config ↗</button>
       <div id="ad-copy-ok" style="font-size:11px;color:rgb(159,84,52);margin-top:6px;display:none;text-align:center">
-        ✓ Copiado! Envie o JSON ao Claude.
+        ✓ Copiado!
       </div>
+      <textarea id="ad-copy-text" readonly style="
+        display:none; width:100%; margin-top:8px; font-size:10px;
+        font-family:monospace; border:1px solid rgba(159,84,52,.3);
+        border-radius:6px; padding:8px; resize:none; height:80px;
+        color:rgb(111,59,36); background:#fff9f6; line-height:1.4;
+      "></textarea>
     `;
 
     document.body.appendChild(toggle);
@@ -324,11 +330,25 @@
       };
     }
     const json = JSON.stringify(out, null, 2);
-    navigator.clipboard.writeText(json).then(() => {
+
+    const ta = document.getElementById('ad-copy-text');
+    ta.value = json;
+    ta.style.display = 'block';
+    ta.select();
+
+    /* Tenta clipboard; se falhar, mantém textarea visível para copiar manualmente */
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(json).then(() => {
+        const ok = document.getElementById('ad-copy-ok');
+        ok.style.display = 'block';
+        setTimeout(() => { ok.style.display = 'none'; }, 3000);
+      }).catch(() => {});
+    } else {
+      try { document.execCommand('copy'); } catch (_) {}
       const ok = document.getElementById('ad-copy-ok');
+      ok.textContent = '✓ Selecione o texto abaixo e copie (Ctrl+C)';
       ok.style.display = 'block';
-      setTimeout(() => { ok.style.display = 'none'; }, 3000);
-    });
+    }
   }
 
   /* ── Semeia CONFIG com os valores já salvos no alignPairs do script.js ── */
